@@ -39,14 +39,20 @@ function App() {
 
   const onIndexUpdate = (index) => setIndex(index);
 
+  let capitalize = ( string ) => string.charAt(0).toUpperCase() + string.slice(1);
+  let categorize = ( string ) => string.slice(0,1).toUpperCase().charCodeAt(0);
+
+  // helper to format data to the directory format:
+  // as the random generator api uses a slightly different syntax;
   let formatData = ( data ) => {
 
     let formatted_data = [];
     data.results.forEach( (obj) => {
   
       formatted_data.push({
-        name: obj.name.first.slice(0,1).toUpperCase() + obj.name.first.slice(1) + ' ' + obj.name.last.slice(0,1).toUpperCase() + obj.name.last.slice(1),
-        category: obj.name.last.slice(0,1).toUpperCase().charCodeAt(0)
+        name: `${capitalize(obj.name.first)} ${capitalize(obj.name.last)}`,
+        category: categorize(obj.name.last),
+        email: obj.email
       });
     });
 
@@ -72,8 +78,7 @@ function App() {
       <h1>Staff Directory</h1>
       <IndexContext.Provider value={{ category:index, updateIndex: onIndexUpdate }}>
         <IndexList />
-        <hr />
-        <Suspense fallback={ <p>Loading Users</p> }>
+        <Suspense fallback={ <p className="message">Loading Users</p> }>
           <UserList items={users} />
         </Suspense>
       </IndexContext.Provider>
