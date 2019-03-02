@@ -1,7 +1,6 @@
-import React, { lazy, Suspense, useContext, useState } from 'react';
+import React, { lazy, Suspense, useContext, useEffect, useState } from 'react';
 import './App.css';
 import IndexContext from './IndexContext';
-import { UserData } from './data/Users';
 
 const UserList = lazy( () => import('./UserList') );
 
@@ -36,7 +35,37 @@ function IndexList() {
 function App() {
 
   const [index, setIndex] = useState(65);
+  const [users, setUsers] = useState([]);
+
   const onIndexUpdate = (index) => setIndex(index);
+
+  let formatData = ( data ) => {
+
+    let formatted_data = [];
+    data.results.forEach( (obj) => {
+  
+      formatted_data.push({
+        name: obj.name.first.slice(0,1).toUpperCase() + obj.name.first.slice(1) + ' ' + obj.name.last.slice(0,1).toUpperCase() + obj.name.last.slice(1),
+        category: obj.name.last.slice(0,1).toUpperCase().charCodeAt(0)
+      });
+    });
+
+    setUsers(formatted_data);
+  }
+
+  // helper function to async/await fetch request:
+  async function getDataAsync(url) {
+    let response = await fetch(url);
+    let data = await response.json();
+    return data;
+  }
+
+  // on mount, go grab some data from random-user generator API:
+  useEffect(
+    () => {
+      getDataAsync('https://randomuser.me/api/?results=100&exec=gender&inc=name,email')
+        .then( rawData => formatData(rawData) )
+    }, [] );
 
   return (
     <main>
@@ -45,7 +74,7 @@ function App() {
         <IndexList />
         <hr />
         <Suspense fallback={ <p>Loading Users</p> }>
-          <UserList items={UserData} />
+          <UserList items={users} />
         </Suspense>
       </IndexContext.Provider>
     </main>
