@@ -1,9 +1,10 @@
 import React, {useContext} from 'react';
 import IndexContext from './IndexContext';
 
-export default function UserList( {items} ) {
+const UserList = React.forwardRef((props, ref) => {
 
   const { category } = useContext(IndexContext);
+  const { items } = props;
 
   let buildItems = () => {
 
@@ -17,7 +18,7 @@ export default function UserList( {items} ) {
         return activeItems.map( (item, index) => {
           return (
             <li className="user" key={index}>
-              <a className="user__link" href={`#${index}`}>
+              <a className="user__link"href={`#${index}`}>
                 <span className="user__name">{item.name}</span>
                 <span className="user__email">{item.email}</span>
               </a>
@@ -27,10 +28,12 @@ export default function UserList( {items} ) {
       }
     }
   }
-  
+
   return (
-    <ul className="users">
+    <ul ref={ref} className="users" tabIndex="0">
       { buildItems() }
     </ul>
   )
-}
+});
+
+export default UserList;

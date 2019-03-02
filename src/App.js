@@ -36,8 +36,12 @@ function App() {
 
   const [index, setIndex] = useState(65);
   const [users, setUsers] = useState([]);
+  const focusRef = React.createRef();
 
-  const onIndexUpdate = (index) => setIndex(index);
+  const onIndexUpdate = (index) => {
+    setIndex(index);
+    focusRef.current.focus();
+  }
 
   let capitalize = ( string ) => string.charAt(0).toUpperCase() + string.slice(1);
   let categorize = ( string ) => string.slice(0,1).toUpperCase().charCodeAt(0);
@@ -79,7 +83,7 @@ function App() {
       <IndexContext.Provider value={{ category:index, updateIndex: onIndexUpdate }}>
         <IndexList />
         <Suspense fallback={ <p className="message">Loading Users</p> }>
-          <UserList items={users} />
+          <UserList items={users} ref={focusRef} />
         </Suspense>
       </IndexContext.Provider>
     </main>
