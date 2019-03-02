@@ -1,46 +1,9 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { lazy, Suspense, useContext, useState } from 'react';
 import './App.css';
+import IndexContext from './IndexContext';
+import { UserData } from './data/Users';
 
-// establish the context we will use throughout the app:
-const IndexContext = createContext({});
-
-// sample data:
-const usersData = [
-  { name: "Aa", category: 65 },
-  { name: "ga", category: 71 },
-  { name: "zd", category: 90 },
-  { name: "de", category: 68 },
-  { name: "kj", category: 75 },
-  { name: "zm", category: 90 },
-  { name: "ab", category: 65 },
-  { name: "pa", category: 80 },
-  { name: "ae", category: 65 },
-  { name: "ei", category: 69 },
-  { name: "us", category: 85 },
-  { name: "ad", category: 65 },
-  { name: "gh", category: 71 }
-];
-
-function UserList( {items} ) {
-
-  const { category } = useContext(IndexContext);
-
-  let activeItems = items.filter( item => item.category === category );
-  return (
-    <ul>
-      {
-        activeItems.length === 0 ?
-          <li>No users available in this index</li>
-        :
-        activeItems.map( (item, index) => {
-          return (
-            <li key={index}>{item.name}</li>
-          )
-        })
-      }
-    </ul>
-  )
-}
+const UserList = lazy( () => import('./UserList') );
 
 function Index( {id} ) {
 
@@ -81,10 +44,11 @@ function App() {
       <IndexContext.Provider value={{ category:index, updateIndex: onIndexUpdate }}>
         <IndexList />
         <hr />
-        <UserList items={usersData} />
+        <Suspense fallback={ <p>Loading Users</p> }>
+          <UserList items={UserData} />
+        </Suspense>
       </IndexContext.Provider>
     </main>
-    
   )
 }
 
