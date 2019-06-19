@@ -3,7 +3,7 @@ import IndexContext from './IndexContext';
 
 const UserList = React.forwardRef((props, ref) => {
 
-  const { category } = useContext(IndexContext);
+  const { useAll, category, query } = useContext(IndexContext);
   const { items } = props;
 
   let buildItems = () => {
@@ -11,7 +11,18 @@ const UserList = React.forwardRef((props, ref) => {
     if ( items.length === 0 ) {
       return <li className="message">There was an issue resolving the data for this directory</li>
     } else {
-      let activeItems = items.filter( item => item.category === category );
+
+      let activeItems = items.filter( (item) => {
+
+        if ( useAll ) {
+          return item.name.indexOf(query) > -1;
+        } else {
+          return item.category === category;
+        }
+      });
+
+      //let activeItems = items.filter( item => item.category === category );
+      
       if ( activeItems.length === 0 ) {
         return <li className="message">No users available in this index</li>
       } else {
